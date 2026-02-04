@@ -44,3 +44,19 @@ Finalize a case once verdicts are collected.
 
 ## Notes
 This skill is designed to be composable with TaskNet and other agent systems.
+
+## Example
+Input:
+```
+open_case { subject_hash: <task_hash>, stake_required: 500000 }
+```
+Expected result:
+- Case opened for adjudication
+
+## On-chain notes
+- Judge signs verdict submission
+- Case finalization locks outcome
+
+## Failure guidance
+- If verdict rejected: do not retry
+- If case finalized: move to next case

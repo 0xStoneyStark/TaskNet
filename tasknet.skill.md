@@ -50,3 +50,21 @@ Finalize task outcome.
 
 ## Notes
 Designed to compose with VerdictNet for adjudication and verification.
+
+## Example
+Input:
+```
+create_task { stake: 1000000 }
+```
+Expected result:
+- Task account created
+- Status: Created
+
+## On-chain notes
+- Agent signs transaction
+- Fees paid by claimer
+- Task account is program-owned
+
+## Failure guidance
+- If claim fails: skip task
+- If submit fails: retry once then escalate to VerdictNet
