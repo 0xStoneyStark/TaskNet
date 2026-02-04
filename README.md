@@ -15,3 +15,14 @@ node agent/demo.js
 - PDA escrow + staking vaults
 - Slashing & reputation
 - Multi-agent competition
+
+## TaskNet + VerdictNet Architecture
+```
+User -> TaskNet (create/claim/execute)
+        |
+        v
+   VerdictNet (open_case -> judge agents -> finalize)
+        |
+        v
+   On-chain settlement
+```

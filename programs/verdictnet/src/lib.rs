@@ -21,6 +21,14 @@ pub mod verdictnet {
         verdict.vote = vote;
         Ok(())
     }
+
+    pub fn finalize_case(ctx: Context<FinalizeCase>, outcome: u8) -> Result<()> {
+        let case = &mut ctx.accounts.case;
+        require!(case.status == CaseStatus::Open, VerdictError::InvalidState);
+        case.final_outcome = Some(outcome);
+        case.status = CaseStatus::Finalized;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -41,15 +49,22 @@ pub struct SubmitVerdict<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct FinalizeCase<'info> {
+    #[account(mut)]
+    pub case: Account<'info, Case>,
+}
+
 #[account]
 pub struct Case {
     pub opener: Pubkey,
     pub subject_hash: [u8;32],
     pub stake_required: u64,
     pub status: CaseStatus,
+    pub final_outcome: Option<u8>,
 }
 
-impl Case { pub const SIZE: usize = 32 + 32 + 8 + 1; }
+impl Case { pub const SIZE: usize = 32 + 32 + 8 + 1 + 1; }
 
 #[account]
 pub struct Verdict {
@@ -61,3 +76,9 @@ impl Verdict { pub const SIZE: usize = 32 + 1; }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
 pub enum CaseStatus { Open, Finalized }
+
+#[error_code]
+pub enum VerdictError {
+    #[msg("Invalid case state")]
+    InvalidState,
+}
