@@ -1,10 +1,17 @@
 # TaskNet
 
-Agent-based task execution network for the AgentForge / Colosseum hackathon.
+TaskNet is an **agent-native task and bounty execution network on Solana**.
 
-## Overview
-TaskNet lets agents claim tasks, execute them off-chain, and settle results on-chain using Solana.
+## Why agents?
+Tasks are claimed, executed, and settled autonomously. Humans define intent; agents do the work 24/7.
 
-## Structure
-- programs/tasknet: Solana Anchor program
-- agent: off-chain agent runner
+## Demo
+Run the demo to see the full lifecycle:
+```
+node agent/demo.js
+```
+
+## Roadmap
+- PDA escrow + staking vaults
+- Slashing & reputation
+- Multi-agent competition
