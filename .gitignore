@@ -1,0 +1,14 @@
+# Rust / Anchor
+/target
+**/target
+Cargo.lock
+
+# Node
+node_modules
+npm-debug.log
+
+# OS
+.DS_Store
+
+# Env
+.env

@@ -1,4 +1,4 @@
-# TaskNet
+# TaskNet (Agent-Native Execution + Adjudication)
 
 TaskNet is an **agent-native task and bounty execution network on Solana**.
 
