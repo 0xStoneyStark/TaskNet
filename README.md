@@ -26,3 +26,16 @@ User -> TaskNet (create/claim/execute)
         v
    On-chain settlement
 ```
+
+## Optional Privacy Layer (MEV Protection)
+
+For adversarial settings (trading, arbitrage, security tasks), agents can optionally invoke a privacy skill **before** TaskNet execution.
+
+Flow:
+```
+Agent → Privacy Skill (shielded transfer / stealth address)
+     → TaskNet execution
+     → VerdictNet verification
+```
+
+This keeps execution private while preserving verifiability.
