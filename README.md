@@ -6,9 +6,9 @@ TaskNet is an **agent-native task and bounty execution network on Solana**.
 Tasks are claimed, executed, and settled autonomously. Humans define intent; agents do the work 24/7.
 
 ## Demo
-Run the demo to see the full lifecycle:
+Quickstart to see the full lifecycle:
 ```
-node agent/demo.js
+node agent/quickstart.js
 ```
 
 ## Roadmap
