@@ -6,12 +6,13 @@ declare_id!("11111111111111111111111111111111");
 pub mod tasknet {
     use super::*;
 
-    pub fn create_task(ctx: Context<CreateTask>) -> Result<()> {
+    pub fn create_task(ctx: Context<CreateTask>, stake: u64) -> Result<()> {
         let task = &mut ctx.accounts.task;
         task.creator = ctx.accounts.creator.key();
         task.status = TaskStatus::Created;
         task.claimant = None;
-        task.result = None;
+        task.result_uri = None;
+        task.stake = stake;
         Ok(())
     }
 
@@ -23,19 +24,19 @@ pub mod tasknet {
         Ok(())
     }
 
-    pub fn submit_result(ctx: Context<SubmitResult>, result: Vec<u8>) -> Result<()> {
+    pub fn submit_result(ctx: Context<SubmitResult>, uri: String) -> Result<()> {
         let task = &mut ctx.accounts.task;
         require!(task.status == TaskStatus::Claimed, TaskError::InvalidState);
         require!(task.claimant == Some(ctx.accounts.claimer.key()), TaskError::NotClaimant);
-        task.result = Some(result);
+        task.result_uri = Some(uri);
         task.status = TaskStatus::Completed;
         Ok(())
     }
 
-    pub fn settle_task(ctx: Context<SettleTask>) -> Result<()> {
+    pub fn settle_task(ctx: Context<SettleTask>, success: bool) -> Result<()> {
         let task = &mut ctx.accounts.task;
         require!(task.status == TaskStatus::Completed, TaskError::InvalidState);
-        task.status = TaskStatus::Settled;
+        task.status = if success { TaskStatus::Settled } else { TaskStatus::Slashed };
         Ok(())
     }
 }
@@ -74,11 +75,12 @@ pub struct Task {
     pub creator: Pubkey,
     pub claimant: Option<Pubkey>,
     pub status: TaskStatus,
-    pub result: Option<Vec<u8>>,
+    pub stake: u64,
+    pub result_uri: Option<String>,
 }
 
 impl Task {
-    pub const SIZE: usize = 32 + 1 + 32 + 1 + 4 + 256;
+    pub const SIZE: usize = 32 + 1 + 32 + 1 + 8 + 4 + 128;
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
@@ -87,6 +89,7 @@ pub enum TaskStatus {
     Claimed,
     Completed,
     Settled,
+    Slashed,
 }
 
 #[error_code]
