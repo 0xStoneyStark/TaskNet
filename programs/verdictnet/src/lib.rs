@@ -14,6 +14,13 @@ pub mod verdictnet {
         case.status = CaseStatus::Open;
         Ok(())
     }
+
+    pub fn submit_verdict(ctx: Context<SubmitVerdict>, vote: u8) -> Result<()> {
+        let verdict = &mut ctx.accounts.verdict;
+        verdict.judge = ctx.accounts.judge.key();
+        verdict.vote = vote;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -25,6 +32,15 @@ pub struct OpenCase<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct SubmitVerdict<'info> {
+    #[account(init, payer = judge, space = 8 + Verdict::SIZE)]
+    pub verdict: Account<'info, Verdict>,
+    #[account(mut)]
+    pub judge: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
 #[account]
 pub struct Case {
     pub opener: Pubkey,
@@ -33,12 +49,15 @@ pub struct Case {
     pub status: CaseStatus,
 }
 
-impl Case {
-    pub const SIZE: usize = 32 + 32 + 8 + 1;
+impl Case { pub const SIZE: usize = 32 + 32 + 8 + 1; }
+
+#[account]
+pub struct Verdict {
+    pub judge: Pubkey,
+    pub vote: u8,
 }
 
+impl Verdict { pub const SIZE: usize = 32 + 1; }
+
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
-pub enum CaseStatus {
-    Open,
-    Finalized,
-}
+pub enum CaseStatus { Open, Finalized }
