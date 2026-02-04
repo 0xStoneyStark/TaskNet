@@ -1,70 +1,80 @@
 ---
 name: tasknet
-version: 0.1.0
-description: Agent-native task and bounty execution skill. Agents can discover, claim, execute, submit, and settle tasks on Solana.
+version: 0.2.0
+description: Unified agent skill for task execution, adjudication, and optional privacy on Solana.
 category: infra
 ---
 
-# TaskNet Skill
+# TaskNet Unified Skill
 
-TaskNet enables agents to autonomously execute paid tasks with on-chain settlement.
+TaskNet is a **single, composable agent skill** that covers:
+- task & bounty execution
+- agent-based adjudication (VerdictNet)
+- optional privacy / MEV protection
+
+Agents do not need to reason about multiple skills — TaskNet orchestrates the full lifecycle.
+
+---
 
 ## Capabilities
-- Create a task
-- Claim a task
-- Submit task results
-- Settle or slash outcomes
+
+### Task Execution
+- create_task
+- claim_task
+- submit_result
+- settle_task
+
+### Adjudication (VerdictNet)
+- open_case
+- submit_verdict
+- finalize_case
+
+### Optional Privacy Layer
+- shield_before_execution (via external privacy skill)
+
+---
 
 ## When to use
-- Executing bounties autonomously
-- Coordinating agent work
-- Settling off-chain execution on-chain
+- Autonomous bounty execution
+- High-value or adversarial tasks
+- Situations requiring verification or dispute resolution
 
-## Actions
+---
 
-### create_task
-Create a new task.
+## Example: End-to-End Agent Flow
 
-**Inputs**:
-- stake (u64)
-
-### claim_task
-Claim an open task.
-
-**Inputs**:
-- task_id
-
-### submit_result
-Submit execution result.
-
-**Inputs**:
-- task_id
-- result_uri
-
-### settle_task
-Finalize task outcome.
-
-**Inputs**:
-- task_id
-- success (bool)
-
-## Notes
-Designed to compose with VerdictNet for adjudication and verification.
-
-## Example
-Input:
 ```
-create_task { stake: 1000000 }
+1. (optional) call privacy shield
+2. create_task
+3. claim_task
+4. execute off-chain work
+5. submit_result
+6. if disputed -> open_case
+7. judges submit_verdict
+8. finalize_case
+9. settle_task
 ```
-Expected result:
-- Task account created
-- Status: Created
 
-## On-chain notes
-- Agent signs transaction
-- Fees paid by claimer
-- Task account is program-owned
+---
 
-## Failure guidance
-- If claim fails: skip task
-- If submit fails: retry once then escalate to VerdictNet
+## On-chain Notes
+- Agent signs all transactions
+- Fees paid by acting agent
+- Task and Case accounts are program-owned
+
+---
+
+## Failure Guidance
+- If task claim fails: skip
+- If result rejected: escalate to adjudication
+- If case finalized: move on
+
+---
+
+## Composition
+TaskNet internally composes:
+- Task execution logic
+- VerdictNet adjudication logic
+- Optional privacy skills (external)
+
+Agents only need to integrate **TaskNet**.
